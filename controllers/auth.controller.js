@@ -1,34 +1,27 @@
-const usuarios = [];
-
-exports.register = (req, res) => {
-    const { usuario, password } = req.body;
-
-    const existe = usuarios.find(u => u.usuario === usuario);
-    if (existe) {
-        return res.status(400).json({ mensaje: "Usuario ya existe" });
-    }
-
-    usuarios.push({ usuario, password });
-
-    res.json({
-        mensaje: "Usuario registrado correctamente",
-        usuario
-    });
-};
+const db = require('../config/db');
 
 exports.login = (req, res) => {
-    const { usuario, password } = req.body;
+  const { correo, password } = req.body;
 
-    const encontrado = usuarios.find(
-        u => u.usuario === usuario && u.password === password
-    );
+  const sql = `
+    SELECT id_usuario, nombre, correo
+    FROM usuario
+    WHERE correo = ? AND password = ?
+  `;
 
-    if (!encontrado) {
-        return res.status(401).json({ mensaje: "Error en la autenticación" });
+  db.query(sql, [correo, password], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ mensaje: "Error servidor" });
     }
 
-    res.json({ mensaje: "Autenticación satisfactoria" });
+    if (result.length > 0) {
+      res.json({
+        mensaje: "Autenticación satisfactoria",
+        usuario: result[0]
+      });
+    } else {
+      res.status(401).json({ mensaje: "Credenciales incorrectas" });
+    }
+  });
 };
-
-// 👇 ESTO ES CLAVE
-exports.usuarios = usuarios;

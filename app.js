@@ -3,16 +3,14 @@ const app = express();
 
 app.use(express.json());
 
-const authRoutes = require("./routes/auth.routes");
-const userRoutes = require("./routes/user.routes");
-
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+// Rutas
+app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/users", require("./routes/user.routes"));
 
 app.get("/", (req, res) => {
-    res.send("API funcionando correctamente");
+  res.send("API Distribuidora activa");
 });
 
 app.listen(3000, () => {
-    console.log("Servidor corriendo en http://localhost:3000");
+  console.log("Servidor corriendo en http://localhost:3000");
 });
